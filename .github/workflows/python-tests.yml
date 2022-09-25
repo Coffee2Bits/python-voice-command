@@ -1,0 +1,40 @@
+on:
+  workflow_call:
+
+jobs:
+  python_tests:
+    name: Python ${{ matrix.py_version }} Tests
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        py_version: ["3.9.0", "3.9.13"]
+
+    steps:
+    - name: Checkout Repository
+      uses: actions/checkout@v2
+
+    - name: Set up Python ${{ matrix.py_version }}
+      uses: actions/setup-python@v2
+      with:
+        python-version: ${{ matrix.py_version }}
+
+    - name: Install the Python Package
+      run: pip install -e .[all]
+
+    - name: Run Tox Tests
+      if: matrix.py_version != '3.9.13'
+      run: tox -e $(echo py${{ matrix.py_version }} | awk -F "." '{print $1$2;}')
+
+    # We only want code coverage to execute on one stage -- let's use the latest version.
+    - name: Run Tox Tests With Coverage
+      if: matrix.py_version == '3.9.13'
+      run: tox -e py39 -- --coverage-report html
+
+    - name: Upload Code Coverage Report
+      uses: actions/upload-artifact@v2
+      if: matrix.py_version == '3.9.13'
+      with:
+        name: test-coverage-report
+        path: html_code_coverage/
+

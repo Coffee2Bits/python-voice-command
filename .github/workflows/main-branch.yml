@@ -1,0 +1,16 @@
+# This workflow is only intended to run when a pull-request is merged into the main branch
+name: Main branch Workflow
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  build_python_artifacts:
+    name: Python Build
+    uses: ./.github/workflows/python-build-artifacts.yml
+
+  python_tests:
+    name: Python Tests
+    needs: build_python_artifacts
+    uses: ./.github/workflows/python-tests.yml
