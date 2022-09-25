@@ -1,6 +1,6 @@
 import logging
 from setuptools import find_packages, setup
-from src.example import __version__, APP_NAME
+from src.pvc import __version__, APP_NAME
 
 README_FILE_PATH: str = "../README.md"
 
@@ -11,7 +11,12 @@ except Exception as exception:
     logging.error(f"Failed to open readme file {README_FILE_PATH} with error:\n {exception}")
     readme_description = ""
 
-runtime_dependencies: list[str] = []
+runtime_dependencies: list[str] = [
+    "playsound >= 1.3.0",
+    "pgi >= 0.0.11.2",
+    "sounddevice >= 0.4.5",
+    "soundfile >= 0.10.3.post1"
+]
 
 development_dependencies: list[str] = [
     "wheel == 0.37.0",
@@ -66,7 +71,7 @@ setup(
     tests_require=test_dependencies,
     entry_points={
         "console_scripts": [
-            f"{APP_NAME}=example.do_something:run",
+            f"{APP_NAME}=pvc.do_something:run",
         ]
     },
     extras_require={
